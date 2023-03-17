@@ -41,16 +41,20 @@ def get_move():
 
 
 def game_ended():
-    for i in range(3):
-        if board[i * 3] == board[i * 3 + 1] == board[i * 3 + 2] and board[i * 3] != " ":
+    for i in range(0, 9, 3):
+        if board[i] == board[i+1] == board[i+2] and board[i] != " ":
             return True
-        if board[i] == board[i + 3] == board[i + 6] and board[i] != " ":
+    for i in range(3):
+        if board[i] == board[i+3] == board[i+6] and board[i] != " ":
             return True
     if board[0] == board[4] == board[8] and board[0] != " ":
         return True
     if board[2] == board[4] == board[6] and board[2] != " ":
         return True
+    if " " not in board:
+        return True  # All squares are filled and no player has won
     return False
+
 
 
 def play(s):
@@ -58,7 +62,7 @@ def play(s):
         draw_board()
         move = get_move()
         board[move] = "X"
-        draw_board()
+        #draw_board()
         s.send(str(move).encode('utf-8'))
         message = s.recv(1024).decode('utf-8')
         #print(f"Message from server is: {message} ")
@@ -70,4 +74,5 @@ def play(s):
     s.close()
 
 #while True:
+#draw_board()
 play(client_socket)
