@@ -1,36 +1,73 @@
 # This is a client part
 import socket
+import sys
 
-HOST = '172.31.96.1'
+HOST = 'localhost'
 PORT = 8080
+# create socket object
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect((HOST, PORT))
+# connect to server
+try:
+    client_socket.connect((HOST, PORT))
+except:
+    print("Unable to connect to server.")
+    sys.exit()
+
+# receive initial board state from server
+start_msg = client_socket.recv(1024).decode()
+if start_msg != "START":
+    print("Unexpected message received from server.")
+    sys.exit()
+
+board = [" "] * 9
+
+def draw_board():
+    print(" {} | {} | {} ".format(board[0], board[1], board[2]))
+    print("---+---+---")
+    print(" {} | {} | {} ".format(board[3], board[4], board[5]))
+    print("---+---+---")
+    print(" {} | {} | {} ".format(board[6], board[7], board[8]))
 
 
-# display the board
-board = ['1','2','3','4','5','6','7','8','9']
-def print_table():
-    print("Current Board:")
-    print("-------------")
-    print(f"{board[0]} ║ {board[1]} ║ {board[2]}")
-    print("══╬═══╬══")
-    print(f"{board[3]} ║ {board[4]} ║ {board[5]}")
-    print("══╬═══╬══")
-    print(f"{board[6]} ║ {board[7]} ║ {board[8]}")
-    print("-------------")
+def get_move():
+    while True:
+        move = input("Enter a number between 1 and 9: ")
+        if move.isdigit():
+            move = int(move) - 1
+            if 0 <= move <= 8 and board[move] == " ":
+                return move
+        print("Invalid move, try again.")
 
-print("Welcome to tic-Tac-Toe")
-print("You make you first move")
-print_table()
-client_x = int(input("Enter the number of cell:"))
-poz=client_x-1
-board[poz]="X"
-print_table()
-listToStr = ' '.join([str(elem) for elem in board])
-print(listToStr)
-s.send(listToStr.encode('utf-8'))
-otvet = s.recv(1024).decode('utf-8')
-print(otvet)
-board = list(otvet.split(" "))
-print_table()
+
+def game_ended():
+    for i in range(3):
+        if board[i * 3] == board[i * 3 + 1] == board[i * 3 + 2] and board[i * 3] != " ":
+            return True
+        if board[i] == board[i + 3] == board[i + 6] and board[i] != " ":
+            return True
+    if board[0] == board[4] == board[8] and board[0] != " ":
+        return True
+    if board[2] == board[4] == board[6] and board[2] != " ":
+        return True
+    return False
+
+
+def play(s):
+    while not game_ended():
+        draw_board()
+        move = get_move()
+        board[move] = "X"
+        draw_board()
+        s.send(str(move).encode('utf-8'))
+        message = s.recv(1024).decode('utf-8')
+        #print(f"Message from server is: {message} ")
+        move = int(message)
+        board[move] = "O"
+        #draw_board()
+    draw_board()
+    print("Game over.")
+    s.close()
+
+while True:
+    play(client_socket)
