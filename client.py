@@ -22,6 +22,7 @@ if start_msg != "START":
 
 board = [" "] * 9
 
+
 def draw_board():
     print(" {} | {} | {} ".format(board[0], board[1], board[2]))
     print("---+---+---")
@@ -42,10 +43,10 @@ def get_move():
 
 def game_ended():
     for i in range(0, 9, 3):
-        if board[i] == board[i+1] == board[i+2] and board[i] != " ":
+        if board[i] == board[i + 1] == board[i + 2] and board[i] != " ":
             return True
     for i in range(3):
-        if board[i] == board[i+3] == board[i+6] and board[i] != " ":
+        if board[i] == board[i + 3] == board[i + 6] and board[i] != " ":
             return True
     if board[0] == board[4] == board[8] and board[0] != " ":
         return True
@@ -56,23 +57,23 @@ def game_ended():
     return False
 
 
-
 def play(s):
     while not game_ended():
         draw_board()
         move = get_move()
         board[move] = "X"
-        #draw_board()
+        # draw_board()
         s.send(str(move).encode('utf-8'))
         message = s.recv(1024).decode('utf-8')
-        #print(f"Message from server is: {message} ")
+        # print(f"Message from server is: {message} ")
         move = int(message)
         board[move] = "O"
-        #draw_board()
+        # draw_board()
     draw_board()
     print("Game over.")
     s.close()
 
-#while True:
-#draw_board()
+
+# while True:
+# draw_board()
 play(client_socket)

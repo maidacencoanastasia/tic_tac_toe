@@ -40,10 +40,10 @@ def get_move():
 
 def game_ended():
     for i in range(0, 9, 3):
-        if board[i] == board[i+1] == board[i+2] and board[i] != " ":
+        if board[i] == board[i + 1] == board[i + 2] and board[i] != " ":
             return True
     for i in range(3):
-        if board[i] == board[i+3] == board[i+6] and board[i] != " ":
+        if board[i] == board[i + 3] == board[i + 6] and board[i] != " ":
             return True
     if board[0] == board[4] == board[8] and board[0] != " ":
         return True
@@ -60,9 +60,9 @@ def s_num(lista):
 
 def play(s):
     while not game_ended():
-        #draw_board()
+        # draw_board()
         message = s.recv(1024).decode('utf-8')
-        #print(f"Message from client is: {message} ")
+        # print(f"Message from client is: {message} ")
         move = int(message)
         board[move] = "X"
         draw_board()
@@ -72,6 +72,7 @@ def play(s):
     draw_board()
     print("Game over.")
     s.close()
+
 
 conn1, addr1 = server_socket.accept()
 print(f"Player connected from {addr1}")
