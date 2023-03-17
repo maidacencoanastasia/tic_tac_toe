@@ -69,5 +69,5 @@ def play(s):
     print("Game over.")
     s.close()
 
-while True:
-    play(client_socket)
+#while True:
+play(client_socket)
