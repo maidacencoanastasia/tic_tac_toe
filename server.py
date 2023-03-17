@@ -63,14 +63,26 @@ def play(s):
         # draw_board()
         message = s.recv(1024).decode('utf-8')
         # print(f"Message from client is: {message} ")
+        if message=="Game over.":
+            print("Game over.You lose the game")
+            break
         move = int(message)
         board[move] = "X"
         draw_board()
-        move = get_move()
-        board[move] = "O"
-        s.send(str(move).encode('utf-8'))
+        if game_ended():
+            print("Game over.You lose")
+            s.send("Game over.".encode('utf-8'))
+            break
+        moveO = get_move()
+        board[moveO] = "O"
+        if game_ended():
+            print("Game over.You win")
+            s.send("Game over.".encode('utf-8'))
+            break
+        else:
+            s.send(str(moveO).encode('utf-8'))
     draw_board()
-    print("Game over.")
+    #print("Game over.")
     s.close()
 
 
